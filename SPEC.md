@@ -1,4 +1,4 @@
-# graph-agent Development Specification
+# pid-graph-agent Development Specification
 
 ## Goal
 
@@ -57,6 +57,10 @@ Python Graph Records
 Tool Result
     ↓
 Local Qwen LLM
+    ↓
+Final JSON selection (status, entity IDs, property keys)
+    ↓
+render_answer(): validate retrieved evidence and render values
     ↓
 Final Answer
 ```
@@ -121,8 +125,14 @@ Do not merge or rename these layers unnecessarily.
 - Produces tool arguments.
 - Performs natural-language node resolution through tool use.
 - Combines tool results.
-- Generates the final grounded answer.
+- Returns a final JSON selection of status, retrieved entity IDs, and property keys.
 - Runs locally, without a paid API.
+
+#### Grounded renderer
+
+- `render_answer()` validates the final selection against the current query's tool results.
+- Reads property values from retrieved records and generates the answer text.
+- Rejects unsupported claims and explicitly reports missing properties.
 
 #### CLI
 
@@ -489,7 +499,7 @@ OpenAI Agents SDK + local Qwen
   - intent understanding;
   - tool selection;
   - structured arguments;
-  - short grounded answer generation.
+  - structured selection of retrieved facts for the grounded renderer.
 - A small local model avoids requiring the evaluator to create an API account or pay for inference.
 - Model choice remains configurable so larger/smaller Qwen variants can be tested.
 
@@ -807,22 +817,61 @@ Example:
 [
   {
     "query": "What is connected to P4711?",
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {"node_id": "P4711", "direction": "both"}
+      }
+    ],
     "expected_nodes": ["H1007", "V1005"]
   },
   {
     "query": "Find the pump upstream of H1007.",
-    "expected_node": "P4711"
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {"node_id": "H1007", "direction": "upstream", "node_type": "Pump", "resolve": true}
+      }
+    ],
+    "resolution_call": {
+      "name": "get_neighbors",
+      "arguments": {"node_id": "H1007", "direction": "upstream", "node_type": "Pump", "resolve": true}
+    },
+    "expected_resolved_node": "P4711",
+    "expected_nodes": ["P4711"]
   },
   {
-    "query": "What pipe connects P4711 and H1007?",
-    "expected_edge": "MNb47122"
+    "query": "What pipe connects P4711 to H1007?",
+    "expected_calls": [
+      {
+        "name": "get_edge",
+        "arguments": {"source": "P4711", "target": "H1007"}
+      }
+    ],
+    "expected_edges": ["MNb47122"]
   },
   {
-    "query": "What is the design temperature of the pipe between P4711 and H1007?",
-    "expected_value": 120
+    "query": "What is the design temperature of the pipe from P4711 to H1007?",
+    "expected_calls": [
+      {
+        "name": "get_edge",
+        "arguments": {"source": "P4711", "target": "H1007"}
+      }
+    ],
+    "expected_edges": ["MNb47122"],
+    "expected_properties": [
+      {"entity_id": "MNb47122", "key": "design_temperature", "value": 120}
+    ]
   }
 ]
 ```
+
+Use `expected_calls` for tool and argument checks, `expected_nodes` and
+`expected_edges` for retrieved IDs, and `expected_properties` for property
+references and their values (or `missing: true`). Retrieval checks require a
+nonempty `expected_calls` list. When it contains multiple calls, specify the
+zero-based `result_call_index` to select which call's result to check. Use
+`resolution_call` with `expected_resolved_node` to score node resolution.
 
 Prefer evaluating retrieved structured evidence/tool results rather than doing brittle exact string comparison against the final prose answer.
 
@@ -996,7 +1045,7 @@ python main.py \
 Use a clean structure similar to:
 
 ```text
-graph-agent/
+pid-graph-agent/
 ├── README.md
 ├── requirements.txt
 ├── pytest.ini
@@ -1083,7 +1132,7 @@ Expected flow:
 
 ```bash
 git clone <repo>
-cd graph-agent
+cd pid-graph-agent
 
 python -m venv .venv
 source .venv/bin/activate

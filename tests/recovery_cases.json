@@ -2,7 +2,7 @@
   {
     "id": "recovery_missing_valve",
     "query": "Tell me about V9999.",
-    "expected_calls": [{"name": "get_node", "arguments": {"node_id": "V9999"}}],
+    "expected_calls": [{"name": "get_entity", "arguments": {"entity_id": "V9999"}}],
     "expected_status": "not_found"
   },
   {
