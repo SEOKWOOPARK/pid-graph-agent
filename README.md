@@ -258,43 +258,6 @@ as valid. Rows also record `retry_count` and `final_outputs`, including every
 completed final response before and after a correction. Any invalid final schema
 or output parsing failure keeps the schema check failed.
 
-To run only the 18 main evaluation cases:
-
-```bash
-python scripts/run_eval.py --cases tests/eval_cases.json
-```
-
-These cases include paths, specific parallel pipes, typed N-hop lists, compound
-properties and missing properties. They measure live Qwen behavior. The
-application does not parse these question patterns to correct intent, narrow
-results or enforce answer completeness.
-
-Rows record `retry_reason` for a response without tool evidence or a final-format
-correction. `final_outputs` keeps the raw model choices, and `calls` keeps the
-actual arguments. Final presence and completion scores measure the resulting
-application answer. They do not mean Qwen chose the right items on its first
-attempt. Tool-call scoring still uses the original calls.
-
-Rows also include `execution_mode`: `agent` for Qwen-driven queries or
-`direct_lookup` for short exact-ID descriptions. Direct lookups retain their
-`get_entity` call and result, with no model final outputs. Retrieval and answer
-checks still apply. Model tool-choice, argument, resolution and schema scores
-are not counted for these cases because Qwen was not invoked.
-
-Validation tests use `pytest.raises` with a specific exception type, for example:
-
-```python
-with pytest.raises(NodeNotFoundError):
-    access.get_node("MISSING")
-```
-
-Here the expected outcome is a missing-node error. The test passes only if that
-exception type (or a subclass) is raised. no exception or an unrelated exception
-fails the test. Using `pytest.raises(Exception)` would also accept unrelated bugs,
-so the tests name the expected error to check that validation failed for the
-intended reason.
-
-Evaluation cases define each tool call once in `expected_calls`. For example:
 
 ```json
 {
