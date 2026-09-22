@@ -1,0 +1,398 @@
+[
+  {
+    "id": "direct_neighbors",
+    "query": "What is connected to P4711?",
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {
+          "node_id": "P4711",
+          "direction": "both"
+        }
+      }
+    ],
+    "expected_nodes": [
+      "H1007",
+      "V1005"
+    ]
+  },
+  {
+    "id": "downstream",
+    "query": "What equipment is directly downstream of P4711?",
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {
+          "node_id": "P4711",
+          "direction": "downstream"
+        }
+      }
+    ],
+    "expected_nodes": [
+      "H1007"
+    ]
+  },
+  {
+    "id": "upstream_pump",
+    "query": "What pump is upstream of H1007?",
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {
+          "node_id": "H1007",
+          "direction": "upstream",
+          "node_type": "Pump"
+        }
+      }
+    ],
+    "resolution_call": {
+      "name": "get_neighbors",
+      "arguments": {
+        "node_id": "H1007",
+        "direction": "upstream",
+        "node_type": "Pump"
+      }
+    },
+    "expected_resolved_node": "P4711",
+    "expected_nodes": [
+      "P4711"
+    ]
+  },
+  {
+    "id": "indirect_target",
+    "query": "Show me everything connected to the pump upstream of H1007, including its pipes.",
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {
+          "node_id": "H1007",
+          "direction": "upstream",
+          "node_type": "Pump",
+          "resolve": true
+        }
+      },
+      {
+        "name": "get_neighbors",
+        "arguments": {
+          "node_id": "P4711",
+          "direction": "both"
+        }
+      },
+      {
+        "name": "get_connected_edges",
+        "arguments": {
+          "node_id": "P4711",
+          "direction": "both"
+        }
+      }
+    ],
+    "result_call_index": 1,
+    "resolution_call": {
+      "name": "get_neighbors",
+      "arguments": {
+        "node_id": "H1007",
+        "direction": "upstream",
+        "node_type": "Pump",
+        "resolve": true
+      }
+    },
+    "expected_resolved_node": "P4711",
+    "expected_selected_edges": [
+      "MNb10005",
+      "MNb47122"
+    ],
+    "expected_nodes": [
+      "H1007",
+      "V1005"
+    ]
+  },
+  {
+    "id": "pipe_lookup",
+    "query": "What pipe connects P4711 to H1007?",
+    "expected_calls": [
+      {
+        "name": "get_edge",
+        "arguments": {
+          "source": "P4711",
+          "target": "H1007"
+        }
+      }
+    ],
+    "expected_edges": [
+      "MNb47122"
+    ]
+  },
+  {
+    "id": "pipe_temperature",
+    "query": "What is the design temperature of the pipe from P4711 to H1007?",
+    "expected_calls": [
+      {
+        "name": "get_edge",
+        "arguments": {
+          "source": "P4711",
+          "target": "H1007"
+        }
+      }
+    ],
+    "expected_edges": [
+      "MNb47122"
+    ],
+    "expected_properties": [
+      {
+        "entity_id": "MNb47122",
+        "key": "design_temperature",
+        "value": 120
+      }
+    ]
+  },
+  {
+    "id": "two_hop_valves",
+    "query": "What valves are reachable downstream from H1007 within 2 hops?",
+    "expected_calls": [
+      {
+        "name": "get_connected_subgraph",
+        "arguments": {
+          "node_id": "H1007",
+          "max_hops": 2,
+          "direction": "downstream",
+          "node_type": "Valve"
+        }
+      }
+    ],
+    "expected_nodes": [
+      "V2001",
+      "V2002"
+    ]
+  },
+  {
+    "id": "directed_path",
+    "query": "Find a path from P4711 to V2001 and list the pipes along the way.",
+    "expected_calls": [
+      {
+        "name": "find_path",
+        "arguments": {
+          "source": "P4711",
+          "target": "V2001"
+        }
+      }
+    ],
+    "expected_nodes": [
+      "P4711",
+      "H1007",
+      "V2001"
+    ],
+    "expected_edges": [
+      "MNb47122",
+      "MNb20001"
+    ]
+  },
+  {
+    "id": "missing_property",
+    "query": "What is the serial_number property of P4711?",
+    "expected_calls": [
+      {
+        "name": "get_node",
+        "arguments": {
+          "node_id": "P4711"
+        }
+      }
+    ],
+    "expected_properties": [
+      {
+        "entity_id": "P4711",
+        "key": "serial_number",
+        "missing": true
+      }
+    ]
+  },
+  {
+    "id": "disconnected",
+    "query": "What equipment is directly connected to T9001?",
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {
+          "node_id": "T9001",
+          "direction": "both"
+        }
+      }
+    ],
+    "expected_nodes": [],
+    "expected_status": "not_found"
+  },
+  {
+    "id": "unmatched_indirect_target",
+    "query": "Show me everything connected to the pump upstream of T9001.",
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {
+          "node_id": "T9001",
+          "direction": "upstream",
+          "node_type": "Pump",
+          "resolve": true
+        }
+      }
+    ],
+    "expected_nodes": [],
+    "expected_status": "not_found"
+  },
+  {
+    "id": "ambiguous_target",
+    "query": "Show everything connected to the pump upstream of H2000.",
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {
+          "node_id": "H2000",
+          "direction": "upstream",
+          "node_type": "Pump",
+          "resolve": true
+        }
+      }
+    ],
+    "expected_nodes": [
+      "P5001",
+      "P5002"
+    ],
+    "expected_status": "ambiguous"
+  },
+  {
+    "id": "standalone_ambiguous_pump",
+    "query": "Which pump feeds H2000?",
+    "expected_calls": [
+      {
+        "name": "get_neighbors",
+        "arguments": {
+          "node_id": "H2000",
+          "direction": "upstream",
+          "node_type": "Pump",
+          "resolve": true
+        }
+      }
+    ],
+    "expected_nodes": [
+      "P5001",
+      "P5002"
+    ],
+    "expected_status": "ambiguous"
+  },
+  {
+    "id": "self_path",
+    "query": "Find a directed path from T9001 to T9001.",
+    "expected_calls": [
+      {
+        "name": "find_path",
+        "arguments": {
+          "source": "T9001",
+          "target": "T9001"
+        }
+      }
+    ],
+    "expected_nodes": [
+      "T9001"
+    ],
+    "expected_edges": []
+  },
+  {
+    "id": "specific_parallel_pipe",
+    "query": "Give the diameter and material of pipe MNb40002 from V2001 to T4001.",
+    "expected_calls": [
+      {
+        "name": "get_edge",
+        "arguments": {
+          "source": "V2001",
+          "target": "T4001",
+          "edge_id": "MNb40002"
+        }
+      }
+    ],
+    "expected_edges": [
+      "MNb40002"
+    ],
+    "expected_properties": [
+      {
+        "entity_id": "MNb40002",
+        "key": "diameter",
+        "value": 25
+      },
+      {
+        "entity_id": "MNb40002",
+        "key": "material",
+        "value": "SS"
+      }
+    ]
+  },
+  {
+    "id": "typed_upstream_hops",
+    "query": "Which pumps are within 3 upstream hops of T4001?",
+    "expected_calls": [
+      {
+        "name": "get_connected_subgraph",
+        "arguments": {
+          "node_id": "T4001",
+          "max_hops": 3,
+          "direction": "upstream",
+          "node_type": "Pump"
+        }
+      }
+    ],
+    "expected_nodes": [
+      "P4711"
+    ]
+  },
+  {
+    "id": "node_and_pipe_temperature",
+    "query": "Report the design_temperature of P4711 and of the pipe from P4711 to H1007 separately.",
+    "expected_calls": [
+      {
+        "name": "get_node",
+        "arguments": {
+          "node_id": "P4711"
+        }
+      },
+      {
+        "name": "get_edge",
+        "arguments": {
+          "source": "P4711",
+          "target": "H1007"
+        }
+      }
+    ],
+    "expected_properties": [
+      {
+        "entity_id": "P4711",
+        "key": "design_temperature",
+        "value": 80
+      },
+      {
+        "entity_id": "MNb47122",
+        "key": "design_temperature",
+        "value": 120
+      }
+    ]
+  },
+  {
+    "id": "missing_pipe_material",
+    "query": "What is the material of the pipe from H1007 to V2001?",
+    "expected_calls": [
+      {
+        "name": "get_edge",
+        "arguments": {
+          "source": "H1007",
+          "target": "V2001"
+        }
+      }
+    ],
+    "expected_edges": [
+      "MNb20001"
+    ],
+    "expected_properties": [
+      {
+        "entity_id": "MNb20001",
+        "key": "material",
+        "missing": true
+      }
+    ]
+  }
+]

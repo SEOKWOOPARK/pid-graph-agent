@@ -1,0 +1,34 @@
+[
+  {
+    "id": "recovery_missing_valve",
+    "query": "Tell me about V9999.",
+    "expected_calls": [{"name": "get_node", "arguments": {"node_id": "V9999"}}],
+    "expected_status": "not_found"
+  },
+  {
+    "id": "recovery_indirect_connection_is_not_a_pipe",
+    "query": "Which pipe directly connects P4711 to T4001?",
+    "expected_calls": [{"name": "get_edge", "arguments": {"source": "P4711", "target": "T4001"}}],
+    "expected_status": "not_found"
+  },
+  {
+    "id": "recovery_path_between_components",
+    "query": "Find a directed path from P5001 to V2001.",
+    "expected_calls": [{"name": "find_path", "arguments": {"source": "P5001", "target": "V2001"}}],
+    "expected_status": "not_found"
+  },
+  {
+    "id": "recovery_isolated_tank_neighbors",
+    "query": "What is connected to T9001?",
+    "expected_calls": [{"name": "get_neighbors", "arguments": {"node_id": "T9001", "direction": "both"}}],
+    "expected_nodes": [],
+    "expected_status": "not_found"
+  },
+  {
+    "id": "recovery_no_direct_upstream_pump",
+    "query": "What pump is directly upstream of T4001?",
+    "expected_calls": [{"name": "get_neighbors", "arguments": {"node_id": "T4001", "direction": "upstream", "node_type": "Pump", "resolve": true}}],
+    "expected_nodes": [],
+    "expected_status": "not_found"
+  }
+]

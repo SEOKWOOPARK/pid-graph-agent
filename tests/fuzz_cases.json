@@ -1,0 +1,48 @@
+[
+  {
+    "id": "whitespace_punctuation",
+    "query": "what   is connected to   P4711??",
+    "expected_calls": [{"name": "get_neighbors", "arguments": {"node_id": "P4711", "direction": "both"}}],
+    "expected_nodes": ["H1007", "V1005"]
+  },
+  {
+    "id": "lowercase_reference",
+    "query": "CONNECTED EQUIPMENT TO p4711",
+    "expected_calls": [{"name": "get_neighbors", "arguments": {"node_id": "P4711", "direction": "both"}}],
+    "expected_nodes": ["H1007", "V1005"]
+  },
+  {
+    "id": "nonexistent_node",
+    "query": "Show me P999999",
+    "expected_status": ["not_found", "unavailable"]
+  },
+  {
+    "id": "nonexistent_path_target",
+    "query": "Find a path between P4711 and NOTHING",
+    "expected_status": ["not_found", "unavailable"]
+  },
+  {
+    "id": "empty_input",
+    "query": "",
+    "expected_error": "invalid_input"
+  },
+  {
+    "id": "excessive_hops",
+    "query": "Show all equipment within 999999 downstream hops of H1007.",
+    "expected_status": "unavailable",
+    "expected_error": ["model_output_error", "invalid_input", "grounding_error"]
+  },
+  {
+    "id": "invalid_direction",
+    "query": "Get neighbors of P4711 with direction sideways.",
+    "expected_status": "unavailable",
+    "expected_error": ["model_output_error", "invalid_input", "grounding_error"]
+  },
+  {
+    "id": "ambiguous_description",
+    "query": "Show me the equipment connected to the auxiliary feed pump.",
+    "expected_calls": [{"name": "search_nodes", "arguments": {"query": "auxiliary feed", "node_type": "Pump", "resolve": true}}],
+    "expected_nodes": ["P5001", "P5002"],
+    "expected_status": "ambiguous"
+  }
+]

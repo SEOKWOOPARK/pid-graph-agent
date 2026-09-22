@@ -1,0 +1,146 @@
+{
+  "nodes": [
+    {
+      "id": "P4711",
+      "type": "Pump",
+      "name": "Feed Pump",
+      "description": "Feed pump supplying heat exchanger H1007",
+      "properties": {"design_pressure": 6.5, "design_temperature": 80}
+    },
+    {
+      "id": "H1007",
+      "type": "HeatExchanger",
+      "name": "Main Heat Exchanger",
+      "description": "Process heat exchanger downstream of feed pump P4711",
+      "properties": {"design_pressure": 60}
+    },
+    {
+      "id": "V1005",
+      "type": "Valve",
+      "name": "Feed Isolation Valve",
+      "description": "Isolation valve upstream of feed pump P4711",
+      "properties": {"nominal_diameter": 80}
+    },
+    {
+      "id": "V2001",
+      "type": "Valve",
+      "name": "Outlet Valve",
+      "description": "Outlet isolation valve downstream of H1007",
+      "properties": {"nominal_diameter": 50}
+    },
+    {
+      "id": "T3001",
+      "type": "Vessel",
+      "name": "Buffer Vessel",
+      "description": "Buffer vessel downstream of H1007",
+      "properties": {"design_pressure": 10}
+    },
+    {
+      "id": "V2002",
+      "type": "Valve",
+      "name": "Buffer Drain Valve",
+      "description": "Drain valve downstream of buffer vessel T3001",
+      "properties": {"nominal_diameter": 25}
+    },
+    {
+      "id": "T4001",
+      "type": "Tank",
+      "name": "Product Tank",
+      "description": "Product tank supplied by two parallel pipes from V2001",
+      "properties": {"capacity": 20}
+    },
+    {
+      "id": "H2000",
+      "type": "HeatExchanger",
+      "name": "Auxiliary Heat Exchanger",
+      "description": "Auxiliary heat exchanger supplied by two pumps",
+      "properties": {"design_pressure": 12}
+    },
+    {
+      "id": "P5001",
+      "type": "Pump",
+      "name": "Auxiliary Feed Pump A",
+      "description": "Auxiliary feed pump supplying H2000",
+      "properties": {"design_pressure": 8}
+    },
+    {
+      "id": "P5002",
+      "type": "Pump",
+      "name": "Auxiliary Feed Pump B",
+      "description": "Auxiliary feed pump supplying H2000",
+      "properties": {"design_pressure": 8}
+    },
+    {
+      "id": "T9001",
+      "type": "Tank",
+      "name": "Disconnected Storage Tank",
+      "description": "Storage tank with no recorded process connections",
+      "properties": {"capacity": 5}
+    }
+  ],
+  "edges": [
+    {
+      "id": "MNb10005",
+      "source": "V1005",
+      "target": "P4711",
+      "type": "Pipe",
+      "properties": {"diameter": 80, "material": "CS"}
+    },
+    {
+      "id": "MNb47122",
+      "source": "P4711",
+      "target": "H1007",
+      "type": "Pipe",
+      "properties": {"diameter": 80, "design_temperature": 120, "material": "CS"}
+    },
+    {
+      "id": "MNb20001",
+      "source": "H1007",
+      "target": "V2001",
+      "type": "Pipe",
+      "properties": {"diameter": 50, "design_temperature": 100}
+    },
+    {
+      "id": "MNb30001",
+      "source": "H1007",
+      "target": "T3001",
+      "type": "Pipe",
+      "properties": {"diameter": 50}
+    },
+    {
+      "id": "MNb20002",
+      "source": "T3001",
+      "target": "V2002",
+      "type": "Pipe",
+      "properties": {"diameter": 25}
+    },
+    {
+      "id": "MNb40001",
+      "source": "V2001",
+      "target": "T4001",
+      "type": "Pipe",
+      "properties": {"diameter": 50, "material": "CS"}
+    },
+    {
+      "id": "MNb40002",
+      "source": "V2001",
+      "target": "T4001",
+      "type": "Pipe",
+      "properties": {"diameter": 25, "material": "SS"}
+    },
+    {
+      "id": "MNb50001",
+      "source": "P5001",
+      "target": "H2000",
+      "type": "Pipe",
+      "properties": {"diameter": 40}
+    },
+    {
+      "id": "MNb50002",
+      "source": "P5002",
+      "target": "H2000",
+      "type": "Pipe",
+      "properties": {"diameter": 40}
+    }
+  ]
+}
