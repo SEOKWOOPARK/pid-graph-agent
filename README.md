@@ -259,29 +259,6 @@ completed final response before and after a correction. Any invalid final schema
 or output parsing failure keeps the schema check failed.
 
 
-```json
-{
-  "query": "What is connected to P4711?",
-  "expected_calls": [
-    {"name": "get_neighbors", "arguments": {"node_id": "P4711", "direction": "both"}}
-  ],
-  "expected_nodes": ["H1007", "V1005"]
-}
-```
-
-The evaluator checks the calls and separately compares the matching call's returned
-IDs with `expected_nodes` / `expected_edges`. If there is one expected call, its
-result is used automatically. If there are several, `result_call_index` is required
-to choose an entry in `expected_calls`, counting from zero. For example, the
-`indirect_target` case uses `result_call_index: 1` to check the second call, which
-retrieves the resolved pump's neighbors. The result check uses the last actual call
-matching that entry's name and specified argument values, including search text.
-A missing or failed call cannot pass merely because the expected list is empty.
-explicit no-match and ambiguity results can be scored. Intermediate results are
-not combined, and filtered traversals compare only `matched_node_ids`. This keeps
-reference nodes and traversal context out of the target result.
-
-
 ## 6) First-run download and hardware
 
 The default is `Qwen/Qwen3-1.7B`. Its first inference downloads public weights from
