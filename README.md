@@ -67,20 +67,6 @@ User question → OpenAI Agents SDK → Local Qwen → tool arguments
     → Local Qwen → verified evidence selection → readable answer
 ```
 
-JSON makes the small static fixture inspectable and easy to test. `load_graph`
-validates the file and returns a Python dictionary containing `nodes` and `edges`
-lists. `GraphAccess` validates and copies those records, then indexes node IDs and
-incoming/outgoing edge lists with built-in Python dictionaries. Directed parallel
-connections retain their individual edge IDs. Breadth-first traversal implements
-shortest paths and N-hop queries. Returned records are copies, so callers cannot
-change the stored graph. Tools use only the public `GraphAccess` interface.
-
-The OpenAI Agents SDK supplies the single-agent tool execution loop. The custom
-`LocalQwenProvider` supplies `LocalQwenModel`, which maps SDK messages and tool
-schemas to Qwen's native chat template. SDK tool outputs are correlated back into
-Qwen history. Hosted
-tracing is disabled even when an unrelated OpenAI API key exists in the environment.
-The adapter never creates a hosted inference client. Streaming is not implemented.
 
 The executable JSON schema lives in `schema.py`. The complete specification review,
 repository structure and interface decisions are in [DESIGN.md](DESIGN.md).
