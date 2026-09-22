@@ -42,8 +42,7 @@ python main.py --query "Find a directed path from P4711 to V2002."
 python main.py --query "Give the diameter and material of all pipes from V2001 to T4001."
 ```
 
-These short lookups use `get_entity` without loading Qwen. The graph determines
-whether the ID is a node or an edge and supplies its actual type, description,
+The graph determines whether the ID is a node or an edge and supplies its actual type, description,
 endpoints and properties. For example, H2000 is a HeatExchanger with
 `design_pressure = 12`, and MNb20002 is the Pipe from T3001 to V2002 with
 `diameter = 25`. IDs are case-sensitive. Unknown IDs produce an explicit
